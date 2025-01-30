@@ -8,11 +8,11 @@ on:
 env:
       DOCKER_PROJECT: training
       DOCKER_REGISTRY: harbor.rs.gsu.edu
-      DOCKER_REPO: stimsina-web
+      DOCKER_REPO: sregmi2-web
 
 jobs:
   build-and-push:
-    runs-on: workshop
+    runs-on: sregmi2-workshop-runner
 
     # Expose step outputs as job outputs
     outputs:
@@ -43,8 +43,8 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         cd src/app
-        docker build -t harbor.rs.gsu.edu/training/stimsina-web:${{ env.VERSION_TAG }} .
-        docker push harbor.rs.gsu.edu/training/stimsina-web:${{ env.VERSION_TAG }}
+        docker build -t harbor.rs.gsu.edu/training/sregmi2-web:${{ env.VERSION_TAG }} .
+        docker push harbor.rs.gsu.edu/training/sregmi2-web:${{ env.VERSION_TAG }}
 
   deploy:
     runs-on: workshop
@@ -57,7 +57,7 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
       with:
-        repository: sanjutimsina/building-cicd-pipelines
+        repository: Motaphe/cicd-pipelines
         token: ${{ secrets.GH_TOKEN }}
         ref: main
 
