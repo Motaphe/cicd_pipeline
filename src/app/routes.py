@@ -6,7 +6,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def home():
-    return jsonify(message="Welcome to the Dockerized Flask App with PostgreSQL!")
+    return jsonify(message="Welcome to the Pipeline!")
 
 @main.route('/data')
 def data():
