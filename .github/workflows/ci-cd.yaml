@@ -31,8 +31,7 @@ jobs:
     
     - name: Get new version tag to set the docker image. test
       id: get_tag
-      run: |
-        apt-get update && apt-get install -y jq 
+      run: | 
         VERSION_TAG=$(bash pipeline/get_version_tag.sh)
         echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
         echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
