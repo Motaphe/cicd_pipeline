@@ -5,7 +5,7 @@ metadata:
   # Add your campusid below
   namespace: sregmi2-pipeline
 spec:
-  storageClassName: local-storage
+  storageClassName: sregmi2-storage
   accessModes:
     - ReadWriteOnce
   resources:
