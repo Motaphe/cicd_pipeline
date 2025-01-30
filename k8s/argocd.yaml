@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workshop-pipeline
+  namespace: argocd
+spec:
+  destination:
+    # Add your campusid below
+    namespace: campusid-pipeline
+    server: "https://kubernetes.default.svc"
+  sources:
+    - path: k8s/manifests/web
+      # Add your github https url below
+      repoURL: https://github.com/{username}/{project}}.git
+      targetRevision: HEAD
+    - path: k8s/manifests/db
+      # Add your github https url below with .git extension
+      repoURL: https://github.com/{username}/{project}}.git
+      targetRevision: HEAD
+  project: default
+  syncPolicy:
+    syncOptions: 
+    - CreateNamespace=true
+    - PruneLast=true
+    automated:
+      selfHeal: true

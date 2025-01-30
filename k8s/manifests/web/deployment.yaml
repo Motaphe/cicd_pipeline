@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  # Add your campusid below
+  namespace: campusid-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      imagePullSecrets:
+      - name: docker-secret
+      containers:
+      - name: web
+        image: harbor.rs.gsu.edu/training/stimsina-web:0.1.2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://user:password@db:5432/workshop_db"
+      
