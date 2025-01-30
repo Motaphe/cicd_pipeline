@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: db
   # Add your campusid below
-  namespace: campusid-pipeline
+  namespace: sregmi2-pipeline
 spec:
   selector:
     app: db

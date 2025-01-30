@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: db-pvc
   # Add your campusid below
-  namespace: campusid-pipeline
+  namespace: sregmi2-pipeline
 spec:
   storageClassName: local-storage
   accessModes:

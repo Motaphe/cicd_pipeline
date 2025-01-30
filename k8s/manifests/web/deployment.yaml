@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: web
   # Add your campusid below
-  namespace: campusid-pipeline
+  namespace: sregmi2-pipeline
 spec:
   replicas: 1
   selector:

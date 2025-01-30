@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: web
   # Add your campusid below
-  namespace: campusid-pipeline
+  namespace: sregmi2-pipeline
 spec:
   selector:
     app: web
