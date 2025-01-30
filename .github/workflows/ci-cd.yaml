@@ -1,0 +1,83 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    paths:
+      - 'src/*'
+
+env:
+      DOCKER_PROJECT: training
+      DOCKER_REGISTRY: harbor.rs.gsu.edu
+      DOCKER_REPO: stimsina-web
+
+jobs:
+  build-and-push:
+    runs-on: workshop
+
+    # Expose step outputs as job outputs
+    outputs:
+      VERSION_TAG: ${{ steps.get_tag.outputs.version_tag }}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Log in to DockerHub
+      uses: docker/login-action@v2
+      with:
+        registry: harbor.rs.gsu.edu
+        username: ${{ secrets.HARBOR_USERNAME }}
+        password: ${{ secrets.HARBOR_PASSWORD }}
+    
+    - name: Get new version tag to set the docker image. test
+      id: get_tag
+      run: |
+        VERSION_TAG=$(bash pipeline/get_version_tag.sh)
+        echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+        echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+        echo $VERSION_TAG
+        
+      env:
+        HARBOR_USER_TOKEN: ${{ secrets.HARBOR_USER_TOKEN }}
+
+    - name: Build and Push Docker Image
+      run: |
+        cd src/app
+        docker build -t harbor.rs.gsu.edu/training/stimsina-web:${{ env.VERSION_TAG }} .
+        docker push harbor.rs.gsu.edu/training/stimsina-web:${{ env.VERSION_TAG }}
+
+  deploy:
+    runs-on: workshop
+    needs: build-and-push
+
+    env:
+        VERSION_TAG: ${{needs.build-and-push.outputs.VERSION_TAG}}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        repository: sanjutimsina/building-cicd-pipelines
+        token: ${{ secrets.GH_TOKEN }}
+        ref: main
+
+    - name:  Edit web deployment.yaml to edit the docker image version tag
+      run: |
+        cd k8s/manifests/web
+        sed -i "s|${DOCKER_REGISTRY}/${DOCKER_PROJECT}/${DOCKER_REPO}:[^[:space:]]*|${DOCKER_REGISTRY}/${DOCKER_PROJECT}/${DOCKER_REPO}:${VERSION_TAG}|g" deployment.yaml
+
+    - name:  Commit and Push Changes
+      if: success()
+      env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        # Get the username and email of the committer
+        AUTHOR_NAME=$(git log -1 --pretty=%an)
+        AUTHOR_EMAIL=$(git log -1 --pretty=%ae)
+          
+        git config --global user.name "$AUTHOR_NAME"
+        git config --global user.email "$AUTHOR_EMAIL"
+          
+        git add k8s/manifests/web/deployment.yaml
+        git commit -m "Update ${DOCKER_REGISTRY}/${DOCKER_PROJECT}/${DOCKER_REPO} to version ${VERSION_TAG}"
+        git push
