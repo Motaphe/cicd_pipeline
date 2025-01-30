@@ -2,8 +2,8 @@ name: CI/CD Pipeline
 
 on:
   push:
-    paths:
-      - 'src/*'
+    branches:
+      - main
 
 env:
       DOCKER_PROJECT: training
