@@ -18,7 +18,7 @@ spec:
       - name: docker-secret
       containers:
       - name: web
-        image: harbor.rs.gsu.edu/training/sregmi2-web:0.1.2
+        image: harbor.rs.gsu.edu/training/sregmi2-web:0.0.1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
